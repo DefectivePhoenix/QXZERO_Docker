@@ -1,0 +1,18 @@
+---
+version: "3.3"
+
+volumes:
+  config:
+  icons:
+  
+services:
+  homepage:
+    image: ghcr.io/benphelps/homepage:latest
+    container_name: homepage
+    restart: always
+    ports:
+      - 13008:3000
+    volumes:
+      - config:/app/config # Make sure your local config directory exists
+      - icons:/app/public/icons
+      - /var/run/docker.sock:/var/run/docker.sock:ro # (optional) For docker integrations Read-Only

@@ -1,0 +1,22 @@
+---
+version: "2.1"
+
+volumes:
+    code:
+
+services:
+  code-server:
+    image: lscr.io/linuxserver/code-server:latest
+    container_name: code-server
+    environment:
+      - PUID=1001
+      - PGID=1001
+      - TZ=America/Chicago
+      - PASSWORD=${PASS}
+      - SUDO_PASSWORD=${SUDO_PASS}
+      - PROXY_DOMAIN=${DOMAIN}
+    volumes:
+      - code:/config
+    ports:
+      - 13013:8443
+    restart: always

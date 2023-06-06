@@ -1,0 +1,44 @@
+---
+version: "3.7"
+
+volumes:
+  db:
+  vault:
+
+services:
+  vaultdb:
+    image: mariadb:latest
+    container_name: vaultdb
+    restart: always
+    volumes:
+      - db:/var/lib/mysql
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+
+  vault:
+    image: vaultwarden/server:latest
+    container_name: vault
+    restart: always
+    ports:
+      - 13005:80
+    depends_on:
+      - vaultdb
+    volumes:
+      - vault:/data/
+    environment:
+      - DATABASE_URL=${DB_URL}
+      - ADMIN_TOKEN=${ADMIN_TOKEN}
+      - RUST_BACKTRACE=1
+      - WEBSOCKET_ENABLED=true
+      - SIGNUPS_ALLOWED=false
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_FROM=${SMTP_FROM}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USERNAME=${SMTP_USERNAME}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - DOMAIN=${DOMAIN}
+  

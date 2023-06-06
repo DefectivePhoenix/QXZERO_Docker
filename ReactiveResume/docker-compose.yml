@@ -1,0 +1,77 @@
+---
+version: "3.8"
+
+services:
+  resumedb:
+    image: postgres:alpine
+    restart: always
+    ports:
+      - 13011:5432
+    volumes:
+      - resumedb:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      start_period: 15s
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    environment:
+      - POSTGRES_DB=${RR_DB_NAME}
+      - POSTGRES_USER=${RR_DB_USER}
+      - POSTGRES_PASSWORD=${RR_DB_PASS}
+
+  resumeserv:
+    image: amruthpillai/reactive-resume:server-latest
+    # build:
+    #   context: .
+    #   dockerfile: ./server/Dockerfile
+    restart: always
+    ports:
+      - 13010:3100
+    depends_on:
+      - resumedb
+    environment:
+      - PUBLIC_URL=${RR_URL}
+      - PUBLIC_SERVER_URL=${RR_SERV_URL}
+      - POSTGRES_DB=${RR_DB_NAME}
+      - POSTGRES_USER=${RR_DB_USER}
+      - POSTGRES_PASSWORD=${RR_DB_PASS}
+      - SECRET_KEY=${SECRET_KEY}
+      - POSTGRES_HOST=${DB_HOST}
+      - POSTGRES_PORT=${DB_PORT}
+    #  - POSTGRES_SSL_CERT=
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRY_TIME=${JWT_EXPIRY_TIME}
+    #  - GOOGLE_CLIENT_SECRET=
+    #  - GOOGLE_API_KEY=
+      - MAIL_FROM_NAME=${FROM_NAME}
+      - MAIL_FROM_EMAIL=${SMTP_FROM}
+      - MAIL_HOST=${SMTP_HOST}
+      - MAIL_PORT=${SMTP_PORT}
+      - MAIL_USERNAME=${SMTP_USERNAME}
+      - MAIL_PASSWORD=${SMTP_PASSWORD}
+    #  - STORAGE_BUCKET=
+    #  - STORAGE_REGION=
+    #  - STORAGE_ENDPOINT=
+    #  - STORAGE_URL_PREFIX=
+    #  - STORAGE_ACCESS_KEY=
+    #  - STORAGE_SECRET_KEY=
+    #  - PDF_DELETION_TIME=
+
+  resumes:
+    image: amruthpillai/reactive-resume:client-latest
+    # build:
+    #   context: .
+    #   dockerfile: ./client/Dockerfile
+    restart: always
+    ports:
+      - 13009:3000
+    depends_on:
+      - resumeserv
+    environment:
+      - PUBLIC_URL=${RR_URL}
+      - PUBLIC_SERVER_URL=${RR_SERV_URL}
+
+
+volumes:
+  resumedb:

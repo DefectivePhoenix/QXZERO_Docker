@@ -1,0 +1,10 @@
+---
+version: '3.9'
+
+services:
+    it-tools:
+        image: 'corentinth/it-tools:latest'
+        ports:
+            - '13012:80'
+        restart: always
+        container_name: it-tools

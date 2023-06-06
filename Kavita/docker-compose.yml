@@ -1,0 +1,24 @@
+---
+version: '3.9'
+
+volumes:
+# manga:
+  books:
+  comics:
+  bookshelf:
+
+services:
+    kavita:
+        image: kizaing/kavita:latest    # Change latest to nightly for latest develop builds (can't go back to stable)
+        container_name: kavita
+        volumes:
+#           - ./manga:/manga            # Manga is just an example you can have the name you want. See the following
+            - comics:/comics          # Use as many as you want
+            - books:/books            #
+            - bookshelf:/kavita/config     # Change './data if you want to have the config files in a different place.
+                                        # /kavita/config must not be changed
+        environment:
+            - TZ=America/Chicago
+        ports:
+            - "13002:5000" # Change the public port (the first 5000) if you have conflicts with other services
+        restart: always
